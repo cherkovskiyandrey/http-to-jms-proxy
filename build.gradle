@@ -73,7 +73,7 @@ dependencies {
 
 springBoot {
     //executable = true
-    mainClass = "ru.sbrf.HttpToJmsProxyServer"
+    mainClass = "ru.cherkovskiy.HttpToJmsProxyServer"
 }
 
 jar {
