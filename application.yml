@@ -1,0 +1,18 @@
+server:
+  port: 8888
+
+ratpack:
+  address: localhost
+
+ratpack-extra:
+  proxy-path: efx
+  # Temporary just for debug - override parameter form resources file
+  path-to-static-content: static
+
+ibm_mq:
+  server-host: 10.21.25.213
+  server-port: 1414
+  queue-manager: QM_ST1.queue.manager
+  channel: QM_ST1.SRVCONN
+  reconnect-timeout: 1000
+  queue-name: queue:///STORM

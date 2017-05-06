@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Jquery -->
+    <script src="/jquery/jquery.min.js"></script>
+    <script src="/jquery/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="/jquery/jquery-ui.min.css">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Date-time peeker -->
+    <link rel="stylesheet" type="text/css" href="/datetimepicker/jquery.datetimepicker.min.css"/>
+    <script src="/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+
+    <!-- Moment library -->
+    <script src="/moment/moment.min.js"></script>
+
+    <!-- Graph library -->
+    <script src="/vis/vis.min.js"></script>
+    <link href="/vis/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Main script and css -->
+    <script src="/scripts/all.js"></script>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css"/>
+
+    <title>Title</title>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader" class="loader_container loader_off">
+    <span class="loader"></span>
+</div>
+
+<!-- It is wo -->
+<!-- nav class="navbar navbar-inverse" data-spy="affix" data-offset-top="1" -->
+<nav class="navbar navbar-inverse">
+    <div class="navbar-header">
+        <p class="navbar-brand">HTTP to JMS proxy server</p>
+    </div>
+    <ul class="nav navbar-nav">
+        <li id="nav_current_state" class="active"><a href="#">Текущее состояние</a></li>
+        <li id="nav_history_data"><a href="#">Данные</a></li>
+        <li id="nav_settings" class="disabled"><a href="#">Настройки</a></li>
+    </ul>
+</nav>
+
+<div id="alert"></div>
+
+<!-- Вёрстка пункта меню "Данные" -->
+<div class="container-fluid" id="history-data" style="display: none">
+    <form id="filter_form" class="form-inline">
+        <div class="form-group">
+            <label class="control-label" for="datetimepicker_begin">Дата и время начала:</label>
+            <input type="text" autocomplete="off" class="form-control" id="datetimepicker_begin">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="datetimepicker_end">Дата и время конца:</label>
+            <input type="text" autocomplete="off" class="form-control" id="datetimepicker_end">
+        </div>
+        <button type="submit" class="btn btn-success">Применить/Обновить</button>
+    </form>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-10">
+            <ul class="pagination pagination-sm" id="pagination">
+            </ul>
+        </div>
+    </div>
+
+    <div id="grid" class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Время прихода</th>
+                <th>Уникальный идент.</th>
+                <th>Длительность обработки (мс)</th>
+                <th>Источник</th>
+                <th>Тип контента</th>
+                <th>Тело</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for body of history element -->
+    <div class="modal fade" id="body_modal">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Текстовое представление данных в кодировке UTF-8</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal for errors of history element -->
+    <div class="modal fade" id="error_modal">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Ошибка</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Вёрстка "Текущее состояние" -->
+<div class="container" id="current_state" style="display: none">
+
+    <div id="server_status">
+        <h4>Сводный статус</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Количество</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="success">
+                    <td>Успешно</td>
+                    <td>0</td>
+                </tr>
+                <tr class="warning">
+                    <td>В процессе</td>
+                    <td>0</td>
+                </tr>
+                <tr class="danger">
+                    <td>Провалены</td>
+                    <td>0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr>
+
+    <h4>Входящий трафик</h4>
+    <div id="input_traffic"></div>
+
+    <hr>
+
+    <h4>Исходящий трафик</h4>
+    <div id="output_traffic"></div>
+</div>
+</body>
+</html>

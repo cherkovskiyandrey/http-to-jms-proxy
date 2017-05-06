@@ -1,0 +1,119 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+group 'ru.cherkovskiy'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${project['spring.boot.version']}"
+        classpath "io.spring.gradle:dependency-management-plugin:${project['io.spring.gradle.dependency-management-plugin.version']}"
+        classpath "io.ratpack:ratpack-gradle:${project['ratpack-gradle.version']}"
+		classpath "com.eriwen:gradle-js-plugin:${project['com.eriwen.gradle-js-plugin.version']}"
+    }
+
+}
+
+apply plugin: "io.spring.dependency-management"
+apply plugin: 'org.springframework.boot'
+apply plugin: "io.ratpack.ratpack-java"
+apply plugin: "com.eriwen.gradle.js"
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+    compile.exclude module: 'log4j'
+    compile.exclude module: 'log4j-over-slf4j'
+    compile.exclude module: 'slf4j-log4j12'
+}
+
+
+def ibmmq = [
+    //"com.ibm.mq:com.ibm.mq.allclient:${project['com.ibm.mq.allclient.version']}",
+    "javax.jms:javax.jms-api:${project['javax.jms-api.version']}"
+]
+
+def jackson = [
+    "com.fasterxml.jackson.core:jackson-databind:${project['jackson.version']}",
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:${project['jackson.version']}",
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${project['jackson.version']}",
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${project['jackson.version']}"
+]
+
+def spring = [
+    "org.springframework.boot:spring-boot-starter",
+    "org.springframework.boot:spring-boot-devtools",
+    "org.springframework:spring-jms:${project['org.springframework.spring-jms']}"
+]
+
+dependencies {
+    compile ibmmq
+    compile jackson
+    compile spring
+    compile ratpack.dependency("rx")
+    compile ratpack.dependency("spring-boot")
+
+    //compile group: 'ch.qos.logback', name: 'logback-classic', version: "${project['logback.version']}"
+    compile "org.apache.commons:commons-lang3:${project['commons-lang3.version']}"
+    compile group: 'com.google.guava', name: 'guava', version: '21.0'
+	compileOnly "org.projectlombok:lombok:1.16.16"
+
+    testCompile group: 'org.springframework', name: 'spring-web', version: "${project['org.springframework.spring-jms']}"
+}
+
+springBoot {
+    //executable = true
+    mainClass = "ru.sbrf.HttpToJmsProxyServer"
+}
+
+jar {
+    baseName = 'ofep-http-to-jms-proxy'
+}
+
+task distJar(type: Copy) {
+    from jar.archivePath
+    into "${buildDir}/distJar"
+    rename(jar.archiveName, 'ofep-http-to-jms-proxy.jar')
+}
+
+combineJs {
+    source = fileTree("src/main/resources/static/scripts")
+    dest = file("${sourceSets.main.output.resourcesDir}/static/scripts/all.js")
+}
+
+
+minifyJs {
+    source = combineJs
+    dest = file("${sourceSets.main.output.resourcesDir}/static/scripts/all-min.js")
+    closure {
+        warningLevel = 'QUIET'
+        //compilerOptions.languageIn = "ECMASCRIPT5"
+    }
+}
+
+processResources.dependsOn minifyJs
+
+build.dependsOn distJar
+distJar.dependsOn bootRepackage
+
+processResources {
+    outputs.upToDateWhen { false }
+    String version = project.version
+    filesMatching('**/application.yml') {
+        filter(ReplaceTokens, tokens: [
+                'version': version,
+                'app-name': 'ofep-http-to-jms-proxy',
+                'path-to-static-content': 'BOOT-INF/classes/static'
+        ])
+    }
+}

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: "@app-name@"
+
+application:
+  version: "@version@"
+
+ratpack-extra:
+  path-to-static-content: "@path-to-static-content@"
